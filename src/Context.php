@@ -17,6 +17,11 @@ final class Context
     private static $_useLaravel = true;
 
     /**
+     * @var bool
+     */
+    private static $_container = null;
+
+    /**
      * Check if run inside laravel.
      */
     public static function checkLaravel()
@@ -34,5 +39,32 @@ final class Context
     public static function useLaravel($flag)
     {
         static::$_useLaravel = (bool) $flag;
+    }
+
+    /**
+     * Apply use laravel flag.
+     *
+     * @param mixed $flag
+     * @param mixed $container
+     */
+    public static function registerContainer($container)
+    {
+        static::$_container = $container;
+    }
+
+    /**
+     *
+     */
+    public static function checkContainer()
+    {
+        return static::$_container != null;
+    }
+
+    /**
+     *
+     */
+    public static function getContainerDatabase()
+    {
+        return static::$_container->db;
     }
 }

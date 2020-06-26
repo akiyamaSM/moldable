@@ -9,34 +9,44 @@ trait DebugApi
     /**
      * @param mixed $type
      * @param mixed $exception
+     * @param mixed $template
+     * @param mixed $offset
      *
      * @throws \Javanile\Moldable\Exception
      *
      * @internal param type $trace
      * @internal param type $error
      */
-    public static function error($type, $exception)
+    public static function error($type, $exception, $template, $offset = 0)
     {
+        $errorMode = static::getClassConfig('error-mode');
+        if ($errorMode == 'silent') {
+            return;
+        }
+
         $reflector = new \ReflectionClass(static::getClass());
+        $exception = is_object($exception) ? $exception->getMessage() : $exception;
 
         switch ($type) {
             case 'class':
-                $slug = 'Moldable class model error, ';
+                $message = 'Moldable model class error, '.$exception;
                 $backtrace = [[
                     'file' => $reflector->getFileName(),
                     'line' => $reflector->getStartLine(),
                 ]];
-                $offset = 0;
                 break;
 
-            case 'database':
-                $slug = 'Moldable database error, ';
+            case 'connection':
+                $message = 'Moldable connection error, '.$exception;
                 $backtrace = debug_backtrace();
-                $offset = 0;
                 break;
         }
 
-        Functions::throwException($slug, $exception, $backtrace, $offset);
+        if ($errorMode == 'exception') {
+            return Functions::applyExceptionTemplate($message, $template, $backtrace, $offset);
+        }
+
+        return Functions::applyErrorTemplate($message, $template, $backtrace, $offset);
     }
 
     /**

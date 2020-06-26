@@ -48,7 +48,7 @@ trait FieldApi
             if (isset($aspects['Class']) && $aspects['Relation'] == '1:1') {
                 $class = $aspects['Class'];
 
-                $this->{$field} = $class::make(
+                $this->{$field} = $class::create(
                     $values,
                     $map,
                     $prefix.$field.'__'
@@ -173,6 +173,9 @@ trait FieldApi
             : null;
     }
 
+    /**
+     * Get PrimaryKey name or MainField name.
+     */
     protected static function getPrimaryKeyOrMainField()
     {
         //
@@ -180,6 +183,14 @@ trait FieldApi
 
         //
         return $key ? $key : static::getMainField();
+    }
+
+    /**
+     * Get list of Class-Model fields use to store or read data.
+     */
+    public static function getModelFields()
+    {
+        return static::getSchemaFields();
     }
 
     /**
@@ -218,7 +229,7 @@ trait FieldApi
     }
 
     /**
-     *
+     * @param mixed $field
      */
     public static function getFieldValues($field)
     {
@@ -257,9 +268,9 @@ trait FieldApi
         return static::getClassAttribute($attribute);
     }
 
-/**
- *
- */
+    /**
+     *
+     */
     protected static function getAllFieldsValues()
     {
         $attribute = 'fields-values';
@@ -275,7 +286,7 @@ trait FieldApi
     }
 
     /**
-     *
+     * Get all fields of called class.
      */
     protected static function getAllFields()
     {
